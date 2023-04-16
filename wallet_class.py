@@ -24,18 +24,17 @@ class Menu:
 
     def __init__(self):
         self.main_menu_options = main_menu_options
+        self.cat1 = CategoryOne()
+        self.cat2 = CategoryTwo()
+        self.cat3 = CategoryThree()
+        self.cat4 = CategoryFour()
 
     @staticmethod
     def menu_loop(name_var, num, dictionary):
-        while True:
-            if name_var <= num and name_var != 0:
-                for key, val in dictionary.items():
-                    if name_var == key:
-                        val()
-                break
-            else:
-                print("Щось пішло не так, введіть число від 1 до", num)
-                break
+        func = dictionary.get(name_var)
+        if func is None:
+            print("Щось пішло не так, введіть число від 1 до", num)
+        func()
 
     @staticmethod
     def the_end():
@@ -44,16 +43,14 @@ class Menu:
     def main_menu(self):
         print("1.{} \n2.{} \n3.{} \n4.{} \n5.{} \nОберіть потрібну цифру: от 1 до 5: "
               .format(*self.main_menu_options))
-        cat = Categories()
 
         menu_dict = {
-            1: cat.categories_one,
-            2: cat.categories_two,
-            3: cat.categories_three,
-            4: cat.categories_four,
+            1: self.cat1,
+            2: self.cat2,
+            3: self.cat3,
+            4: self.cat4,
             5: self.the_end
         }
-
         try:
             choice = int(input("Введіть потрібний пункт: "))
             self.menu_loop(choice, 5, menu_dict)
@@ -65,17 +62,18 @@ class Menu:
 class Categories:
 
     def __init__(self):
+        # Category1
         self.menu_categories = menu_categories
         # список созданных пользователем категорий
         self.user_categories = []
-        # 2 Управління рахунками
+        # Category2
         self.bank_account = bank_account
-        # список созданных пользователем счетов
         self.user_accounts = user_accounts
-        # 3 Управління витратами та доходами
+        # Category3
         self.income_expense_management = income_expense_management
-        # 4 Пошук
+        # Category4
         self.search_transactions_op = search_transactions_op
+        self.menu = Menu()
 
     @staticmethod
     def print_subcategory_menu(lst):
@@ -84,15 +82,14 @@ class Categories:
 
     def return_to_menu(self):
         print("welcome to the main menu")
-        self.main_menu()
+        self.menu.main_menu()
 
-    def menu_universal(self, menu_cat, num, functional):
+    def menu_universal(self, num, functional):
         try:
             choice = int(input("Введіть потрібний пункт: "))
-            self.menu_loop(choice, num, functional)
+            self.menu.menu_loop(choice, num, functional)
         except ValueError:
             print("\nВи ввели неправильне значення. Спробуйте ще раз.\n")
-            menu_cat(num, functional)
 
 
 class CategoryOne(Categories):
@@ -134,15 +131,16 @@ class CategoryOne(Categories):
         2: remove_category,
         3: update_category,
         4: list_category,
-        5: self.return_to_menu
+        5: Categories.return_to_menu
     }
 
-    def menu_cat1():
+    def menu_cat1(self):
         self.print_subcategory_menu(self.menu_categories)
-        self.menu_universal(5, functional)
+        self.menu_universal(5, self.functional)
 
     while True:
         menu_cat1()
+
 
 class CategoryTwo(Categories):
 
@@ -177,20 +175,19 @@ class CategoryTwo(Categories):
         3: change_user_acc,
         4: list_users_acc,
         5: balance_users_acc,
-        6: self.return_to_menu
+        6: Categories.return_to_menu
     }
 
     def menu_cat2(self):
         self.print_subcategory_menu(self.bank_account)
-        self.menu_universal(6, functional)
+        self.menu_universal(6, self.functional)
 
     while True:
         menu_cat2()
 
 
 class CategoryThree(Categories):
-    
-    
+
     def add_expense(self):
         print("welcome to the add_expense ")
         pass
@@ -217,16 +214,36 @@ class CategoryThree(Categories):
         3: transfer_money,
         4: check_transactions,
         5: get_statistics,
-        6: self.return_to_menu
+        6: Categories.return_to_menu
     }
 
     def menu_cat3(self):
         self.print_subcategory_menu(self.income_expense_management)
-        self.menu_universal(6, functional)
+        self.menu_universal(6, self.functional)
 
     while True:
         menu_cat3()
 
 
 class CategoryFour(Categories):
-    pass
+
+    def search_by_category(self):
+        print("welcome to the search_by_category ")
+        pass
+
+    def search_by_amount_date(self):
+        print("welcome to the search_by_amount_date ")
+        pass
+
+    functional = {
+        1: search_by_category,
+        2: search_by_amount_date,
+        3: Categories.return_to_menu
+    }
+
+    def menu_cat4(self):
+        self.print_subcategory_menu(self.income_expense_management)
+        self.menu_universal(3, self.functional)
+
+    while True:
+        menu_cat4()
