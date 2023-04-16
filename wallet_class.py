@@ -25,9 +25,9 @@ class Menu:
     def __init__(self):
         self.main_menu_options = main_menu_options
         self.cat1 = CategoryOne()
-        self.cat2 = CategoryTwo()
-        self.cat3 = CategoryThree()
-        self.cat4 = CategoryFour()
+        #self.cat2 = CategoryTwo()
+        #self.cat3 = CategoryThree()
+        #self.cat4 = CategoryFour()
 
     @staticmethod
     def menu_loop(name_var, num, dictionary):
@@ -45,10 +45,10 @@ class Menu:
               .format(*self.main_menu_options))
 
         menu_dict = {
-            1: self.cat1,
-            2: self.cat2,
-            3: self.cat3,
-            4: self.cat4,
+            1: self.cat1.run_menu,
+            #2: self.cat2.run_menu(),
+            #3: self.cat3.run_menu(),
+            #4: self.cat4.run_menu(),
             5: self.the_end
         }
         try:
@@ -134,116 +134,16 @@ class CategoryOne(Categories):
         5: Categories.return_to_menu
     }
 
-    def menu_cat1(self):
-        self.print_subcategory_menu(self.menu_categories)
-        self.menu_universal(5, self.functional)
+    @staticmethod
+    def menu_cat1():
+        categories = Categories()
+        Categories.print_subcategory_menu(categories.menu_categories)
+        categories.menu_universal(5, CategoryOne.functional)
 
-    while True:
-        menu_cat1()
-
-
-class CategoryTwo(Categories):
-
-    def add_user_acc(self):
-        # выпилить 2 категории, 1 словарь хранящий в себе номер счета который хранит в себе 1)тип счета, 2)деньги
-        pattern = r'^\d{8}$'
-        account_num = input("Номер рахунку має складатися з 8 цифр. Приклад: 12345678 \nВведіть номер рахунку: ")
-        if re.match(pattern, account_num):
-            account_type = int(input("Оберіть тип: \n1.дебетовий \n2.кредитний \nВведіть цифру 1 або 2: "))
-            if account_type == "1":
-                user_accounts[account_num] = {"type": "debit", "transactions": []}
-            elif account_type == "2":
-                user_accounts[account_num] = {"type": "credit", "transactions": []}
-        else:
-            print("Неправильный формат номера счета")
-
-    def remove_user_acc(self):
-        print('welcome to the remove_user_acc')
-
-    def change_user_acc(self):
-        print('welcome to the change_user_acc')
-
-    def list_users_acc(self):
-        print('welcome to the list_users_acc')
-
-    def balance_users_acc(self):
-        print("welcome to the balance_users_acc")
-
-    functional = {
-        1: add_user_acc,
-        2: remove_user_acc,
-        3: change_user_acc,
-        4: list_users_acc,
-        5: balance_users_acc,
-        6: Categories.return_to_menu
-    }
-
-    def menu_cat2(self):
-        self.print_subcategory_menu(self.bank_account)
-        self.menu_universal(6, self.functional)
-
-    while True:
-        menu_cat2()
+    def run_menu(self):
+        while True:
+            self.menu_cat1()
 
 
-class CategoryThree(Categories):
-
-    def add_expense(self):
-        print("welcome to the add_expense ")
-        pass
-
-    def add_income(self):
-        print("welcome to the add_income ")
-        pass
-
-    def transfer_money(self):
-        print("welcome to the transfer_money ")
-        pass
-
-    def check_transactions(self):
-        print("welcome to the check_transactions ")
-        pass
-
-    def get_statistics(self):
-        print("welcome to the get_statistics ")
-        pass
-
-    functional = {
-        1: add_expense,
-        2: add_income,
-        3: transfer_money,
-        4: check_transactions,
-        5: get_statistics,
-        6: Categories.return_to_menu
-    }
-
-    def menu_cat3(self):
-        self.print_subcategory_menu(self.income_expense_management)
-        self.menu_universal(6, self.functional)
-
-    while True:
-        menu_cat3()
-
-
-class CategoryFour(Categories):
-
-    def search_by_category(self):
-        print("welcome to the search_by_category ")
-        pass
-
-    def search_by_amount_date(self):
-        print("welcome to the search_by_amount_date ")
-        pass
-
-    functional = {
-        1: search_by_category,
-        2: search_by_amount_date,
-        3: Categories.return_to_menu
-    }
-
-    def menu_cat4(self):
-        self.print_subcategory_menu(self.income_expense_management)
-        self.menu_universal(3, self.functional)
-
-    while True:
-        menu_cat4()
+test = Menu()
+test.main_menu()
