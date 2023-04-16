@@ -159,14 +159,74 @@ class CategoryTwo(Categories):
         else:
             print("Неправильный формат номера счета")
 
+    def remove_user_acc(self):
+        print('welcome to the remove_user_acc')
+
+    def change_user_acc(self):
+        print('welcome to the change_user_acc')
+
+    def list_users_acc(self):
+        print('welcome to the list_users_acc')
+
+    def balance_users_acc(self):
+        print("welcome to the balance_users_acc")
+
+    functional = {
+        1: add_user_acc,
+        2: remove_user_acc,
+        3: change_user_acc,
+        4: list_users_acc,
+        5: balance_users_acc,
+        6: self.return_to_menu
+    }
+
+    def menu_cat2(self):
+        self.print_subcategory_menu(self.bank_account)
+        self.menu_universal(6, functional)
+
+    while True:
+        menu_cat2()
+
 
 class CategoryThree(Categories):
-    pass
+    
+    
+    def add_expense(self):
+        print("welcome to the add_expense ")
+        pass
+
+    def add_income(self):
+        print("welcome to the add_income ")
+        pass
+
+    def transfer_money(self):
+        print("welcome to the transfer_money ")
+        pass
+
+    def check_transactions(self):
+        print("welcome to the check_transactions ")
+        pass
+
+    def get_statistics(self):
+        print("welcome to the get_statistics ")
+        pass
+
+    functional = {
+        1: add_expense,
+        2: add_income,
+        3: transfer_money,
+        4: check_transactions,
+        5: get_statistics,
+        6: self.return_to_menu
+    }
+
+    def menu_cat3(self):
+        self.print_subcategory_menu(self.income_expense_management)
+        self.menu_universal(6, functional)
+
+    while True:
+        menu_cat3()
 
 
 class CategoryFour(Categories):
     pass
-
-
-
-
