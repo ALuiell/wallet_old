@@ -1,0 +1,463 @@
+import random
+import re
+
+"""Тестування орігіналу"""
+
+
+class Menu:
+
+    def __init__(self):
+        self.main_menu_options = ["Управління категоріями витрат та доходів", "Управління рахунками",
+                                  "Управління витратами та доходами", "Пошук", "Вихід"]
+        self.cat1 = CategoryOne
+        self.cat2 = CategoryTwo
+        self.cat3 = CategoryThree
+        self.cat4 = CategoryFour
+
+    # функціональний цикл меню, відповідає за роботу та виклик функцій обраних користувачем
+    @staticmethod
+    def menu_loop(name_var, end, dictionary, menu_name=None):
+        if name_var > end:
+            print("Ви ввели неправильне значення. Спробуйте ще раз")
+            menu_name()
+        elif name_var <= end:
+            func = dictionary.get(name_var)
+            func()
+
+    @staticmethod
+    def the_end():
+        quit()
+
+    def main_menu(self):
+        print("1.{} \n2.{} \n3.{} \n4.{} \n5.{} \nОберіть потрібну цифру: от 1 до 5: "
+              .format(*self.main_menu_options))
+        menu_dict = {
+            1: self.cat1().menu_cat1,
+            2: self.cat2().menu_cat2,
+            3: self.cat3().menu_cat3,
+            4: self.cat4().menu_cat4,
+            5: self.the_end
+        }
+        try:
+            choice = int(input("Введіть потрібний пункт: "))
+            self.menu_loop(choice, 5, menu_dict, self.main_menu)
+        except ValueError:
+            print("\nВи ввели неправильне значення. Спробуйте ще раз.\n")
+            self.main_menu()
+
+
+class Categories:
+
+    def __init__(self):
+        # class Menu
+        self.menu = Menu()
+
+        # CategoryOne
+        self.menu_categories = ["Додати категорію", "Видалити категорію", "Змінити дані про категорію",
+                                "Перегляд списку категорій", "Назад\n"]
+        self.user_categories = ["Їжа", "Одяг і взуття", "Розваги", "Транспорт", "Комунальні послуги", "Оплата житла",
+                                "Здоров'я та медицина", "Подарунки та благодійність", "Краса та гігієна",
+                                "Офісні витрати", "Домашні тварини", "Подорожі", "Освіта та розвиток", "Інші витрати"]
+
+        # CategoryTwo
+        self.bank_account = ["Створити новий рахунок", "Видалити рахунок", "Змінити дані рахунку",
+                             "Переглянути список рахунків", "Назад\n"]
+        self.user_accounts = {
+            "12345678": {"type": "Дебетовий", "name": "John Smith", "transactions": [], "balance": 0.0},
+            "87654321": {"type": "Кредитний", "name": "Jane Doe", "transactions": [], "balance": 0.0},
+            "65432198": {"type": "Дебетовий", "name": "Michael Johnson", "transactions": [], "balance": 0.0}
+        }
+
+        # CategoryThree
+        self.income_expense_management = ["Додавання/видалення витрат до певного рахунку",
+                                          "Додавання/видалення прибутків до певного рахунку",
+                                          "Переведення грошей з рахунку на рахунок",
+                                          "Перевірка витрат/прибутків за певний період",
+                                          "Отримання статистики прибутків/витрат за певний період по днях та категоріях",
+                                          "Назад\n"]
+
+        # 4 CategoryFour
+        self.search_transactions_op = ["Можливість пошуку категорій, витрат прибутків за категорією",
+                                       "Можливість пошуку прибутку витрати за сумою датою", "Назад\n"]
+
+        # 5 main_menu
+
+        # universal
+        self.lst_accounts = ["12345678", "87654321", "65432198"]
+
+    # відображення пунктів меню категорії
+    @staticmethod
+    def print_subcategory_menu(lst):
+        for i, elem in enumerate(lst, start=1):
+            print(f"{i}.{elem}")
+
+    def return_to_menu(self):
+        self.menu.main_menu()
+
+    # перевіряє на тип даних та відправляє у виконання функції menu_loop
+    def menu_universal(self, num, functional, menu_name):
+        try:
+            choice = int(input("Оберіть потрібний пункт: "))
+            self.menu.menu_loop(choice, num, functional, menu_name)
+        except ValueError:
+            print("\nВи ввели неправильне значення. Спробуйте ще раз.\n")
+
+    def validate_account_num(self, num):
+        if num in self.lst_accounts:
+            return True
+        else:
+            print("Рахунок не знайдено")
+            return False
+
+    # передаешь аргументов вторым тру если надо проверка на 3, если надо проверка на 2 тогда ничего не передаешь
+    @staticmethod
+    def validate_menu_choice(var, include_three=False):
+        if not include_three:
+            if var == "1" or var == "2":
+                return True
+            else:
+                return False
+        elif include_three:
+            if var == "1" or var == "2" or var == "3":
+                return True
+            else:
+                return False
+
+    def display_balance(self, account_num):
+        balance_info = self.user_accounts.get(account_num)
+        print("Баланс: {}".format(balance_info.get("balance")))
+
+
+class CategoryOne(Categories):
+
+    def validate_name_categories(self, name):
+        if name in self.user_categories:
+            print("Категорія с такою назвою вже існує.")
+            return False
+        else:
+            return True
+
+    def add_category(self):
+
+        name = input("Введіть назву нової категорії: ")
+        if self.validate_name_categories(name):
+            self.user_categories.append(name)
+            if name in self.user_categories:
+                print("Категорію додано")
+
+    def remove_category(self):
+        name = input("Введіть назву категорії: ")
+        if name in self.user_categories:
+            self.user_categories.remove(name)
+            if name not in self.user_categories:
+                print("Категорія видалена")
+        elif name not in self.user_categories:
+            print("Категорію не знайдено")
+
+    def update_category(self):
+        name = input("Введіть назву категорії, яку потрібно змінити: ")
+        if name in self.user_categories:
+            index = self.user_categories.index(name)
+            new_name = input("Введіть назву категорії: ")
+            self.user_categories[index] = new_name
+            print("Назван категорії оновлена")
+        else:
+            print("Категорія не знайдена")
+
+    def list_category(self):
+        print("Список категорій:")
+        print(", ".join(self.user_categories))
+
+    def menu_cat1(self):
+        functional = {
+            1: self.add_category,
+            2: self.remove_category,
+            3: self.update_category,
+            4: self.list_category,
+            5: self.menu.main_menu
+        }
+        while True:
+            self.print_subcategory_menu(self.menu_categories)
+            self.menu_universal(5, functional, self.menu_cat1)
+
+
+class CategoryTwo(Categories):
+
+    @staticmethod
+    def generate_account_number():
+        digits = list(range(10))
+        random.shuffle(digits)
+        account_number = ''.join(map(str, digits[:8]))
+        return account_number
+
+    def validate_new_account_num(self, account_num):
+        if account_num not in self.lst_accounts:
+            self.lst_accounts.append(account_num)
+        else:
+            account_num = self.generate_account_number()
+            self.lst_accounts.append(account_num)
+        return account_num
+
+    # сделать более универсал, что бы выводить только те части которые надо
+    def display_account_info(self, account_num):
+        account_info = self.user_accounts.get(account_num)
+        print("Номер Рахунку: {}\nПІБ: {}\nТип: {} \nБаланс: {}".format(
+            account_num,
+            account_info.get('name'),
+            account_info.get('type'),
+            account_info.get("balance")
+        ))
+
+    @staticmethod
+    def validate_name(name):
+        pattern = r'^[А-ЩЬЮЯЇІЄҐ][а-щьюяїієґ]+\s+([-\']?[А-ЩЬЮЯЇІЄҐ][а-щьюяїієґ]+\s+)?[А-ЩЬЮЯЇІЄҐ][а-щьюяїієґ]+$'
+        match = re.match(pattern, name)
+        if match:
+            return True
+        else:
+            print("ПІБ введено неправильно")
+            return False
+
+    def input_name(self):
+        while True:
+            name = input("Введіть ПІБ: ")
+            if self.validate_name(name):
+                return name
+
+    def input_type(self):
+        while True:
+            account_type = input("Оберіть тип: \n1.дебетовий \n2.кредитний \nВведіть цифру 1 або 2: ")
+            if self.validate_menu_choice(account_type):
+                return account_type
+
+    def add_user_acc(self):
+        account_num = self.generate_account_number()
+        account_num = self.validate_new_account_num(account_num)
+        account_name = self.input_name()
+        account_type = self.input_type()
+
+        if account_type == "1":
+            self.user_accounts[account_num] = {"type": "Дебетовий", "name": account_name, "transactions": [],
+                                               "balance": 0.0}
+            print('Рахунок створено \n')
+            self.display_account_info(account_num)
+            print()
+
+        elif account_type == "2":
+            self.user_accounts[account_num] = {"type": "Кредитний", "name": account_name, "transactions": [],
+                                               "balance": 0.0}
+            print('Рахунок створено\n')
+            self.display_account_info(account_num)
+            print()
+
+    def remove_user_acc(self):
+        self.lst_user_acc()
+        num_acc = input("Введіть номер рахунку для видалення: ")
+        if num_acc in self.user_accounts:
+            print("Рахунок видалено \n")
+            del self.user_accounts[num_acc]
+        else:
+            print("Рахунок не знайдено \n")
+            self.remove_user_acc()
+
+    def update_menu(self, input_acc):
+        def update_account_type():
+            update_acc_type = ["1.Дебетовий", "2.Кредитний", "3.Назад"]
+            print("{} \n{} \n{}".format(*update_acc_type))
+            while True:
+                # проверять ввод через функцию  validate_menu_choice
+                what_type = input("Оберіть пункт: ")
+                if what_type == "1":
+                    self.user_accounts[input_acc]["type"] = "Дебетовий"
+                    print("Тип рахунку змінено на Дебетовий \n")
+                    self.display_account_info(input_acc)
+                    return
+
+                elif what_type == "2":
+                    self.user_accounts[input_acc]["type"] = "Кредитний"
+                    print("Тип рахунку змінено на Кредитний \n")
+                    self.display_account_info(input_acc)
+                    return
+
+                elif what_type == "3":
+                    return
+
+                else:
+                    print("Неправильний вибір, спробуйте ще раз.")
+                    update_account_type()
+
+        def update_account_name():
+            while True:
+                new_name = input("Введіть новий ПІБ: ")
+                if self.validate_name(new_name):
+                    self.user_accounts[input_acc]["name"] = new_name
+                    print("Інформацію оновлено")
+                    self.display_account_info(input_acc)
+                    self.update_menu(input_acc)
+                    return "back"
+
+                else:
+                    print("Неправильне ім'я, спробуйте ще раз.")
+                    continue
+
+        while True:
+            update_menu_lst = ["Що бажаєте змінити?", "1.Тип", "2.ПІБ", "3.Повернутись в меню"]
+            print("{} \n{} \n{} \n{}".format(*update_menu_lst))
+            what_change = input("Введіть номер опції: ")
+            if what_change == "1":
+                update_account_type()
+
+            elif what_change == "2":
+                result1 = update_account_name()
+                if result1 == "back":
+                    break
+
+            elif what_change == "3":
+                break
+
+            else:
+                print("Неправильний вибір, спробуйте ще раз.")
+                self.update_menu(input_acc)
+
+    def update_user_acc(self):
+        self.lst_user_acc()
+        input_acc = input("Введіть номер рахунку: ")
+        if input_acc in self.user_accounts:
+            print("Рахунок знайдено\n")
+            self.display_account_info(input_acc)
+            print()
+            self.update_menu(input_acc)
+        else:
+            print("Рахунок не знайдено, спробуйте ще раз")
+            self.update_user_acc()
+
+    def lst_user_acc(self):
+        if len(self.user_accounts) == 0:
+            print("Рахунків нема")
+        for i in self.user_accounts:
+            self.display_account_info(i)
+            print()
+
+    def menu_cat2(self):
+        functional = {
+            1: self.add_user_acc,
+            2: self.remove_user_acc,
+            3: self.update_user_acc,
+            4: self.lst_user_acc,
+            5: self.menu.main_menu
+        }
+        while True:
+            self.print_subcategory_menu(self.bank_account)
+            self.menu_universal(5, functional, self.menu_cat2)
+
+
+class CategoryThree(Categories):
+
+    def __init__(self):
+        super().__init__()
+        self.cat2 = CategoryTwo()
+        self.cat1 = CategoryOne()
+
+    def input_num(self):
+        num = input("Введіть номер рахунку:")
+        if self.validate_account_num(num):
+            return num
+
+    def validate_money_input(self):
+        pattern = r"^(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])\.\d{4}$"
+        while True:
+            date = input("Введіть дату, формат: 27.04.2023: ")
+            if re.match(pattern, date):
+                break
+            print("Невірний формат дати. Спробуйте ще раз.")
+
+        while True:
+            self.cat1.list_category()
+            category_input = input("Введіть одну з категорій: ")
+            if category_input in self.user_categories:
+                break
+            print("Категорія не знайдена, Спробуйте ще раз.")
+
+        pattern = r"^[+-]\d+$"
+        while True:
+            trans = input("Введіть значення у форматі +/-сума, наприклад, "
+                          "+100 для додавання 100 грн або -100 для віднімання 100 грн: ")
+            if re.match(pattern, trans):
+                break
+            print("Введено неправильно. \nПриклад: +100, -100")
+
+        return date, category_input, trans
+
+    def add_transaction(self):
+        # Show a list of user accounts for selection
+        self.cat2.lst_user_acc()
+        # Get the account number from the user input
+        account_num = self.input_num()
+        self.display_balance(account_num)
+        # Get the date, category, and transaction details from the user input
+        date, category, transaction = self.validate_money_input()
+        # Get the list of transactions and current balance for the selected account
+        transactions = self.user_accounts[account_num]["transactions"]
+        balance = self.user_accounts[account_num]["balance"]
+        # Add the new transaction to the list of transactions and update the balance
+        transactions.append({"date": date, "category": category, "transaction": transaction})
+        balance += float(transaction)
+        # Update the transactions list and balance for the selected account
+        self.user_accounts[account_num]["transactions"] = transactions
+        self.user_accounts[account_num]["balance"] = balance
+        print("Транзакцію додано")
+        self.display_balance(account_num)
+
+    def delete_transaction(self):
+        print("welcome to the delete_transaction")
+        pass
+
+    def transfer_money(self):
+        print("welcome to the transfer_money ")
+        pass
+
+    def check_transactions(self):
+        print("welcome to the check_transactions ")
+        pass
+
+    def get_statistics(self):
+        print("welcome to the get_statistics ")
+        pass
+
+    def menu_cat3(self):
+        functional = {
+            1: self.add_transaction,
+            2: self.delete_transaction,
+            3: self.transfer_money,
+            4: self.check_transactions,
+            5: self.get_statistics,
+            6: self.menu.main_menu
+        }
+        while True:
+            self.print_subcategory_menu(self.income_expense_management)
+            self.menu_universal(6, functional, self.menu_cat3)
+
+
+class CategoryFour(Categories):
+
+    def search_by_category(self):
+        print("welcome to the search_by_category ")
+        pass
+
+    def search_by_amount_date(self):
+        print("welcome to the search_by_amount_date ")
+        pass
+
+    def menu_cat4(self):
+        functional = {
+            1: self.search_by_category,
+            2: self.search_by_amount_date,
+            3: self.return_to_menu
+        }
+        while True:
+            self.print_subcategory_menu(self.income_expense_management)
+            self.menu_universal(3, functional, self.menu_cat4)
+
+
+test = Menu()
+test.main_menu()
