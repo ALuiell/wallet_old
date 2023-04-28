@@ -132,15 +132,6 @@ class Categories:
         balance_info = self.user_accounts.get(account_num)
         print("Баланс: {:,.2f} грн".format(balance_info.get("balance")))
 
-    def display_account_info(self, account_num):
-        account_info = self.user_accounts.get(account_num)
-        print("Номер Рахунку: {}\nПІБ: {}\nТип: {} \nБаланс: {}".format(
-            account_num,
-            account_info.get('name'),
-            account_info.get('type'),
-            account_info.get("balance")
-        ))
-
 
 class CategoryOne(Categories):
 
@@ -193,6 +184,15 @@ class CategoryTwo(Categories):
             ))
             print()
 
+    def display_account_info(self, account_num):
+        account_info = self.user_accounts.get(account_num)
+        print("Номер Рахунку: {}\nПІБ: {}\nТип: {} \nБаланс: {}".format(
+            account_num,
+            account_info.get('name'),
+            account_info.get('type'),
+            account_info.get("balance")
+        ))
+
     def balance_users_acc(self):
         print("welcome to the balance_users_acc")
 
@@ -242,24 +242,16 @@ class CategoryThree(CategoryOne, CategoryTwo, Categories):
 
         return date, category_input, trans
 
-    def update_user_accounts(self):
-        for account_num in self.user_accounts:
-            transactions = self.user_accounts[account_num]["transactions"]
-            balance = sum([float(trans['transaction']) for trans in transactions])
-            self.user_accounts[account_num]["balance"] = balance
-
     def add_transaction(self):
-        self.update_user_accounts()
         # Show a list of user accounts for selection
         self.lst_user_acc()
         # Get the account number from the user input
         account_num = self.input_num()
-        self.display_balance(account_num)
-        # Get the date, category, and transaction details from the user input
-        date, category, transaction = self.validate_money_input()
         # Get the list of transactions and current balance for the selected account
         transactions = self.user_accounts[account_num]["transactions"]
         balance = self.user_accounts[account_num]["balance"]
+        # Get the date, category, and transaction details from the user input
+        date, category, transaction = self.validate_money_input()
         # Add the new transaction to the list of transactions and update the balance
         transactions.append({"date": date, "category": category, "transaction": transaction})
         balance += float(transaction)
