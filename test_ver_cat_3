@@ -1,12 +1,14 @@
 """Тільки пусті функції для тестування"""
 import re
+import datetime
+import random
 
 menu_categories = ["Додати категорію", "Видалити категорію", "Змінити дані про категорію",
                    "Перегляд списку категорій", "Назад"]
 
 bank_account = ["Створити новий рахунок", "Видалити рахунок", "Змінити дані рахунку",
                 "Переглянути список рахунків", "Переглянути кошти на рахунку", "Назад"]
-user_accounts = {}
+
 income_expense_management = ["Додавання/видалення витрат до певного рахунку",
                              "Додавання/видалення прибутків до певного рахунку",
                              "Переведення грошей з рахунку на рахунок",
@@ -17,6 +19,19 @@ search_transactions_op = ["Можливість пошуку категорій,
                           "Можливість пошуку прибутку витрати за сумою датою", "Назад"]
 main_menu_options = ["Управління категоріями витрат та доходів", "Управління рахунками",
                      "Управління витратами та доходами", "Пошук", "Вихід"]
+
+user_categories = ["Їжа", "Одяг і взуття", "Розваги", "Транспорт", "Комунальні послуги", "Оплата житла",
+                   "Здоров'я та медицина", "Подарунки та благодійність", "Краса та гігієна",
+                   "Офісні витрати", "Домашні тварини", "Подорожі", "Освіта та розвиток", "Інші витрати"]
+
+user_accounts = {
+    "12345678": {"type": "Дебетовий", "name": "John Smith", "transactions": [], "balance": 0.0},
+    "87654321": {"type": "Кредитний", "name": "Jane Doe", "transactions": [], "balance": 0.0},
+    "65432198": {"type": "Дебетовий", "name": "Michael Johnson", "transactions": [], "balance": 0.0}
+}
+lst_accounts = ["12345678", "87654321", "65432198"]
+
+lst_transfer = {}
 
 
 class Menu:
@@ -67,20 +82,15 @@ class Categories:
 
         # CategoryOne
         self.menu_categories = menu_categories
-        self.user_categories = ["Їжа", "Одяг і взуття", "Розваги", "Транспорт", "Комунальні послуги", "Оплата житла",
-                                "Здоров'я та медицина", "Подарунки та благодійність", "Краса та гігієна",
-                                "Офісні витрати", "Домашні тварини", "Подорожі", "Освіта та розвиток", "Інші витрати"]
+        self.user_categories = user_categories
 
         # CategoryTwo
         self.bank_account = bank_account
-        self.user_accounts = {
-            "12345678": {"type": "Дебетовий", "name": "John Smith", "transactions": [], "balance": 0.0},
-            "87654321": {"type": "Кредитний", "name": "Jane Doe", "transactions": [], "balance": 0.0},
-            "65432198": {"type": "Дебетовий", "name": "Michael Johnson", "transactions": [], "balance": 0.0}
-        }
+        self.user_accounts = user_accounts
 
         # CategoryThree
         self.income_expense_management = income_expense_management
+        self.lst_transfer = lst_transfer
 
         # 4 CategoryFour
         self.search_transactions_op = search_transactions_op
@@ -89,8 +99,7 @@ class Categories:
         self.main_menu_options = main_menu_options
 
         # universal
-        self.lst_accounts = ["12345678", "87654321", "65432198"]
-        self.cat2 = CategoryTwo
+        self.lst_accounts = lst_accounts
 
     @staticmethod
     def print_subcategory_menu(lst):
@@ -131,6 +140,13 @@ class Categories:
     def display_balance(self, account_num):
         balance_info = self.user_accounts.get(account_num)
         print("Баланс: {:,.2f} грн".format(balance_info.get("balance")))
+
+    def display_account_info(self, account_num):
+        print("Номер Рахунку: {}".format(account_num))
+        print(f"ПІБ: {self.user_accounts[account_num]['name']}")
+        print(f"Тип: {self.user_accounts[account_num]['type']}")
+        self.display_balance(account_num)
+        print()
 
 
 class CategoryOne(Categories):
@@ -175,26 +191,11 @@ class CategoryTwo(Categories):
     def lst_user_acc(self):
         if len(self.user_accounts) == 0:
             print("Рахунків нема")
-        for account_num, account_info in self.user_accounts.items():
-            print("Номер Рахунку: {}\nПІБ: {}\nТип: {}\nБаланс: {}".format(
-                account_num,
-                account_info.get('name'),
-                account_info.get('type'),
-                account_info.get("balance")
-            ))
-            print()
-
-    def display_account_info(self, account_num):
-        account_info = self.user_accounts.get(account_num)
-        print("Номер Рахунку: {}\nПІБ: {}\nТип: {} \nБаланс: {}".format(
-            account_num,
-            account_info.get('name'),
-            account_info.get('type'),
-            account_info.get("balance")
-        ))
-
-    def balance_users_acc(self):
-        print("welcome to the balance_users_acc")
+        else:
+            print("Список рахунків:\n")
+            for elem, info in self.user_accounts.items():
+                self.display_account_info(elem)
+        print("-------------------------------------------------------------------------------------------------------")
 
     def menu_cat2(self):
         functional = {
@@ -202,28 +203,57 @@ class CategoryTwo(Categories):
             2: self.remove_user_acc,
             3: self.change_user_acc,
             4: self.lst_user_acc,
-            5: self.balance_users_acc,
-            6: self.menu.main_menu
+            5: self.menu.main_menu
         }
+
         while True:
             self.print_subcategory_menu(self.bank_account)
-            self.menu_universal(6, functional, self.menu_cat2)
+            self.menu_universal(5, functional, self.menu_cat2)
 
 
 class CategoryThree(CategoryOne, CategoryTwo, Categories):
+
+    @staticmethod
+    def generate_random_date():
+        """Генерация даты"""
+        current_time = datetime.datetime.now()
+        time_speed = random.uniform(0, 400)  # случайное значение скорости времени
+        step = datetime.timedelta(days=1)
+        current_time += step * time_speed
+        year = current_time.year
+        month = current_time.month
+        day = current_time.day
+        return f"{day:02d}.{month:02d}.{year}"
+
+    @staticmethod
+    def generate_transaction_id():
+        """Генерация id"""
+        rand_num = random.randint(100000, 999999)
+        new_transaction_id = f"TRX{rand_num}"
+        return new_transaction_id
 
     def input_num(self):
         num = input("Введіть номер рахунку:")
         if self.validate_account_num(num):
             return num
 
+    def display_transactions(self, account_num):
+        """Отображение транзакций"""
+        transactions = self.user_accounts[account_num]["transactions"]
+        if len(transactions) != 0:
+            self.display_account_info(account_num)
+            print("Транзакції: ")
+            for i, transaction in enumerate(transactions):
+                print(
+                    f"{i + 1}. {transaction['date']} | {transaction['category']} | {transaction['transaction']}"
+                    f" | id:{transaction['transaction_id']}")
+            print(
+                "-------------------------------------------------------------------------------------------------------")
+        else:
+            print("Транзакцій на рахунку: {} не знайдено".format(account_num))
+
     def validate_money_input(self):
-        pattern = r"^(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])\.\d{4}$"
-        while True:
-            date = input("Введіть дату, формат: 27.04.2023: ")
-            if re.match(pattern, date):
-                break
-            print("Невірний формат дати. Спробуйте ще раз.")
+        date = self.generate_random_date()
 
         while True:
             self.list_category()
@@ -245,29 +275,120 @@ class CategoryThree(CategoryOne, CategoryTwo, Categories):
     def add_transaction(self):
         # Show a list of user accounts for selection
         self.lst_user_acc()
+        trans_id = self.generate_transaction_id()
         # Get the account number from the user input
         account_num = self.input_num()
+        self.display_balance(account_num)
+        # Get the date, category, and transaction details from the user input
+        date, category, transaction = self.validate_money_input()
         # Get the list of transactions and current balance for the selected account
         transactions = self.user_accounts[account_num]["transactions"]
         balance = self.user_accounts[account_num]["balance"]
-        # Get the date, category, and transaction details from the user input
-        date, category, transaction = self.validate_money_input()
         # Add the new transaction to the list of transactions and update the balance
-        transactions.append({"date": date, "category": category, "transaction": transaction})
+        transactions.append(
+            {"transaction_id": trans_id, "date": date, "category": category, "transaction": transaction})
         balance += float(transaction)
         # Update the transactions list and balance for the selected account
         self.user_accounts[account_num]["transactions"] = transactions
         self.user_accounts[account_num]["balance"] = balance
-        print("Транзакцію додано")
-        self.display_balance(account_num)
+        print("{} | {} | {} | id:{}\n".format(date, category, transaction, trans_id))
+        self.display_account_info(account_num)
 
-    def delete_transaction(self):
-        print("welcome to the add_income ")
-        pass
+    def delete_transaction(self, account_num, transaction, transactions):
+        """Удаление обычной транзакции"""
+        """account_num: номер счета, transaction: словарь транзакции в списке,
+        transactions: список транзакций указанного счета """
+
+        transaction_amount = float(transaction["transaction"])
+        if transaction_amount > 0:
+            balance = self.user_accounts[account_num]["balance"] - transaction_amount
+        else:
+            balance = self.user_accounts[account_num]["balance"] + abs(transaction_amount)
+        transactions.remove(transaction)
+        self.user_accounts[account_num]["transactions"] = transactions
+        self.user_accounts[account_num]["balance"] = balance
+
+    def delete_transfer_transaction(self, account_num, transaction_id):
+        """Удаление перевода со второго счета"""
+        transaction_info = self.lst_transfer[transaction_id]
+        account_num1 = transaction_info["to_account"]  # если удаляется транзакция со счета получателя True
+        account_num2 = transaction_info["from_account"]  # если удаляется транзакция со счета отправителя False
+
+        verify = "2"
+        if account_num == account_num2:
+            verify = "1"
+
+        def delete(account_number):
+            transactions = self.user_accounts[account_number]["transactions"]
+            for elem in transactions:
+                if transaction_id == elem["transaction_id"]:
+                    print("id транзакции на втором счету найден")
+                    transaction_amount = float(elem["transaction"])
+                    if transaction_amount > 0:
+                        balance = self.user_accounts[account_number]["balance"] - transaction_amount
+                    else:
+                        balance = self.user_accounts[account_number]["balance"] + abs(transaction_amount)
+                    transactions.remove(elem)
+                    self.user_accounts[account_number]["transactions"] = transactions
+                    self.user_accounts[account_number]["balance"] = balance
+                    break
+
+        if verify == "1":
+            delete(account_num1)
+        elif verify == "2":
+            delete(account_num2)
+
+        del lst_transfer[transaction_id]
+
+    def delete_transactions(self):
+        account_num = self.input_num()
+        transactions = user_accounts[account_num]["transactions"]
+        self.display_transactions(account_num)
+        transaction_id = input("Введіть id транзакції: ")
+        for elem in transactions:
+            if transaction_id == elem["transaction_id"]:
+                if elem["category"] == "Перекази":
+                    transfer_transaction = elem
+                    self.delete_transaction(account_num, transfer_transaction, transactions)
+                    self.delete_transfer_transaction(account_num, transaction_id)
+                else:
+                    transaction = elem
+                    self.delete_transaction(account_num, transaction, transactions)
+        print("Транзакція видалена")
 
     def transfer_money(self):
-        print("welcome to the transfer_money ")
-        pass
+        """Перевод денег между счетами"""
+        from_num1 = self.input_num()
+        to_num2 = self.input_num()
+        transfer_id = self.generate_transaction_id()
+        date1 = self.generate_random_date()
+        category = "Перекази"
+        if user_accounts[from_num1]["balance"] != 0.0:
+            self.display_account_info(from_num1)
+            amount = float(input("Введіть суму для переводу: "))
+
+            trans1 = "-{:.2f}".format(amount)
+            trans2 = "+{:.2f}".format(amount)
+
+            if user_accounts[from_num1]["balance"] >= amount:
+                user_accounts[from_num1]["balance"] -= amount
+                user_accounts[to_num2]["balance"] += amount
+                user_accounts[to_num2]["transactions"].append(
+                    {"transaction_id": transfer_id, "date": date1, "category": category, "transaction": trans1})
+
+                user_accounts[to_num2]["transactions"].append(
+                    {"transaction_id": transfer_id, "date": date1, "category": category, "transaction": trans2})
+                print("\nПереказ виконано\n")
+
+                lst_transfer[transfer_id] = {"date": date1, "from_account": from_num1, "to_account": to_num2,
+                                             "amount": amount}
+                print(
+                    "---------------------------------------------------------------------------------------------------")
+
+            else:
+                print("Недостатньо коштів на рахунку")
+        else:
+            print("Баланс рахунку: {} пустий".format(from_num1))
 
     def check_transactions(self):
         print("welcome to the check_transactions ")
